@@ -6,6 +6,7 @@ const User = require("../models/User");
 
 var jwtSecret = "mysecrettoken";
 
+
 const registerUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -15,7 +16,9 @@ const registerUser = async (req, res) => {
   const { Fullname, email, password, userRole, pNumber } = req.body;
 
   if (!Fullname || !email || !password)
-    return res.status(400).json({ errorMessage: "name, email, password fields are required..!" });
+    return res
+      .status(400)
+      .json({ errorMessage: "name, email, password fields are required..!" });
 
   if (Fullname.length < 3)
     return res.status(400).json({
@@ -26,7 +29,7 @@ const registerUser = async (req, res) => {
     return res.status(400).json({
       errorMessage: "Password field is required..! (Min 7 charachtors)",
     });
-    
+
   try {
     // See if user exists
     let user = await User.findOne({ email });
@@ -35,7 +38,7 @@ const registerUser = async (req, res) => {
       res.status(400).json({ errors: [{ msg: "User already exists" }] });
     }
     user = new User({
-       Fullname,
+      Fullname,
       pNumber,
       email,
       password,
@@ -66,6 +69,7 @@ const registerUser = async (req, res) => {
   }
 };
 
+
 const authUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -75,6 +79,7 @@ const authUser = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
 
 const loginUser = async (req, res) => {
   const errors = validationResult(req);
@@ -115,6 +120,7 @@ const loginUser = async (req, res) => {
   }
 };
 
+
 const getUsers = async (req, res) => {
   try {
     const users = await User.find();
@@ -124,6 +130,7 @@ const getUsers = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+
 
 const getUser = async (req, res) => {
   const { id } = req.params;
@@ -137,8 +144,9 @@ const getUser = async (req, res) => {
   }
 };
 
+
 const createUser = async (req, res) => {
-  const {  Fullname, email, password, userRole, pNumber } = req.body;
+  const { Fullname, email, password, userRole, pNumber } = req.body;
 
   try {
     // See if user exists
@@ -148,11 +156,11 @@ const createUser = async (req, res) => {
       res.status(400).json({ errors: [{ msg: "User already exists" }] });
     }
     user = new User({
-        Fullname,
-        pNumber,
+      Fullname,
+      pNumber,
       email,
       password,
-      
+
       userRole,
     });
 
@@ -168,6 +176,7 @@ const createUser = async (req, res) => {
     res.status(409).json({ message: error.message });
   }
 };
+
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
@@ -190,6 +199,7 @@ const updateUser = async (req, res) => {
   res.json(updatedUser);
 };
 
+
 const deleteUser = async (req, res) => {
   const { id } = req.params;
 
@@ -201,7 +211,7 @@ const deleteUser = async (req, res) => {
   res.json({ message: "User deleted successfully." });
 };
 
-const getUsersByID= async (req, res) => {
+const getUsersByID = async (req, res) => {
   let id = req.params;
   console.log("id", id.id);
 
@@ -214,6 +224,7 @@ const getUsersByID= async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+
 
 module.exports = {
   getUsers,
