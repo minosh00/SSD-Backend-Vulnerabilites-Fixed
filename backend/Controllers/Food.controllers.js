@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Groups = require('../models/Food');
+const xml2js = require('xml2js'); // Import xml2js library
+
 
 const get = async (req, res) => { 
     try {
@@ -36,16 +38,47 @@ const RemoveFood = async (request,response) => {
     })
 }
 
-const createMenu= async (req, res) => {
-    const groups = req.body;
-    const newGroups = new Groups({ ...groups, creator: req.userId })
+
+const createMenu = async (req, res) => {
+    const xmlInput = req.body;
+  
+    // Log the received XML input (for debugging purposes)
+    console.log("Received XML input:");
+    console.log(xmlInput);
+  
+    // Parse the XML input securely
     try {
-        await newGroups.save();
-        res.status(201).json(newGroups );
+      // Configure xml2js to disable external entity expansion
+      const parser = new xml2js.Parser({
+        explicitCharkey: true,
+        explicitRoot: false,
+        explicitArray: false,
+        ignoreAttrs: true,
+        mergeAttrs: false,
+        charsAsChildren: true,
+        async: true,
+      });
+  
+      // Parse the XML input
+      parser.parseStringPromise(xmlInput).then(async (result) => {
+        // Process the parsed XML data (you can use 'result' here)
+  
+        // Example: Create a new menu item from the parsed XML data
+        const newMenuItem = {
+          name: result.name,
+          description: result.description,
+          price: result.price,
+          images: result.images.image,
+        };
+  
+        res.status(201).json({ message: "Menu item created successfully"});
+      });
     } catch (error) {
-        res.status(409).json({ message: error.message });
+      res.status(409).json({ message: error.message });
     }
-}
+  };
+
+
 
 const getMenuById = async (req, res) => { 
     const { id } = req.params;
@@ -56,5 +89,6 @@ const getMenuById = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 }
+
 
 module.exports ={getMenuById,createMenu,updateMenuByID,get,RemoveFood};

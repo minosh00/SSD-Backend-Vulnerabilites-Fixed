@@ -78,10 +78,6 @@ const createEmployee= async (req, res) => {
             errorMessage: "Please enter a fname of at least 12 characters.",
         });
     
-    
-    
-
-
     const newGroups = new Employee({ ...groups, creator: req.userId })
 
     try {

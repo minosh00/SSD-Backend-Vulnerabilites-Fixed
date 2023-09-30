@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-
+const xml2js = require("xml2js"); // Import xml2js library
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -18,6 +18,8 @@ app.get("/" , (req,res)=>{
 })
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.text({ type: "application/xml" })); // Set the body parser for XML content
+
 app.use(bodyParser.json());
 
 const dotenv = require("dotenv");
