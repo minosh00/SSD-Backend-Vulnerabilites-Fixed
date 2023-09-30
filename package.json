@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "express-validator": "^7.0.1",
     "xml2js": "^0.6.2"
   }
 }

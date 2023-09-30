@@ -5,8 +5,6 @@ const { check } = require("express-validator");
 const { getUsers, getUser, deleteUser, createUser, updateUser, registerUser, authUser, loginUser, getUsersByID } = require("../Controllers/userController");
 
 
-var jwtSecret = "mysecrettoken";
-
 
 router.post("/createUser", createUser);
 router.get("/getAllUsers", getUsers);

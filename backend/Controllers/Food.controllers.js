@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Groups = require('../models/Food');
 const xml2js = require('xml2js'); // Import xml2js library
+const { check, validationResult } = require('express-validator');
 
 
 const get = async (req, res) => { 
@@ -39,15 +40,23 @@ const RemoveFood = async (request,response) => {
 }
 
 
+// Input validation middleware for the "createMenu" route
+const validateMenuInput = [
+  check('name').notEmpty().isString(),
+  check('description').notEmpty().isString(),
+  check('price').notEmpty().isNumeric(),
+  check('images').notEmpty().isString(),
+];
 const createMenu = async (req, res) => {
-    const xmlInput = req.body;
-  
-    // Log the received XML input (for debugging purposes)
-    console.log("Received XML input:");
-    console.log(xmlInput);
-  
-    // Parse the XML input securely
-    try {
+  try {
+    let inputData;
+    if (req.is('json')) {
+      // JSON data
+      inputData = req.body;
+    } else if (req.is('xml')) {
+      // XML data
+      const xmlInput = req.body;
+
       // Configure xml2js to disable external entity expansion
       const parser = new xml2js.Parser({
         explicitCharkey: true,
@@ -58,25 +67,31 @@ const createMenu = async (req, res) => {
         charsAsChildren: true,
         async: true,
       });
-  
+
       // Parse the XML input
-      parser.parseStringPromise(xmlInput).then(async (result) => {
-        // Process the parsed XML data (you can use 'result' here)
-  
-        // Example: Create a new menu item from the parsed XML data
-        const newMenuItem = {
-          name: result.name,
-          description: result.description,
-          price: result.price,
-          images: result.images.image,
-        };
-  
-        res.status(201).json({ message: "Menu item created successfully"});
-      });
-    } catch (error) {
-      res.status(409).json({ message: error.message });
+      const result = await parser.parseStringPromise(xmlInput);
+
+      // Process the parsed XML data (you can use 'result' here)
+      inputData = {
+        name: result.name,
+        description: result.description,
+        price: result.price,
+        images: result.images.image,
+      };
+    } else {
+      return res.status(400).json({ message: 'Unsupported Content-Type' });
     }
-  };
+
+    // Create and save the new menu item to the database
+    const createdMenuItem = new Groups(inputData);
+    await createdMenuItem.save();
+
+    res.status(201).json({ message: 'Menu item created successfully' });
+  } catch (error) {
+    res.status(409).json({ message: error.message });
+  }
+};
+
 
 
 

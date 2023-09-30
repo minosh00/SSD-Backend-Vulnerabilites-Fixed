@@ -17,7 +17,7 @@ app.get("/" , (req,res)=>{
   res.json("server has started")
 })
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json()); // JSON data
 app.use(bodyParser.text({ type: "application/xml" })); // Set the body parser for XML content
 
 app.use(bodyParser.json());
