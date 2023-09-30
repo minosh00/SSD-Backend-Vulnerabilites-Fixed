@@ -12,11 +12,6 @@ app.use(
   })
 );
 
-
-app.get("/" , (req,res)=>{
-  res.json("server has started")
-})
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 

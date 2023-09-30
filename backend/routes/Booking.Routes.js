@@ -82,9 +82,9 @@ router.get('/getbookingbyuserid/:Fullname', async (req, res) => {
 });
 
 
-router.get('/getname/Prasadi', async (req, res) => {
+router.get('/getname/prasadi@gmail.com', async (req, res) => {
     try {
-        const book = await Booking.find({ Fullname: 'Prasadi' });
+        const book = await Booking.find({ email: 'prasadi@gmail.com' });
         res.status(200).json(book);
     } catch (err) {
         res.json(err);
