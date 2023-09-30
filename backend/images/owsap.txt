@@ -1,0 +1,7 @@
+A2: Broken Authentication: This category covers issues related to authentication mechanisms, such as session management and password policies. JWT authentication is a mechanism to address these concerns.
+
+A5: Security Misconfiguration: Ensure that your authentication mechanism, JWT secret, and other security-related settings are properly configured and not exposed.
+
+A6: Security Logging and Monitoring: Properly logging and monitoring authentication and authorization activities, including failed login attempts and unauthorized access, is essential to detect and respond to security incidents.
+
+A10: Insufficient Logging and Monitoring: As mentioned, logging and monitoring are essential for tracking and identifying suspicious activities related to authentication and authorization.
