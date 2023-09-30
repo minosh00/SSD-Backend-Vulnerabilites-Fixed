@@ -8,6 +8,6 @@
 $ npm install
 
 3) Run the following command to start the server  backend :
-$ npm run dev
+$ npm start
 
 ```
