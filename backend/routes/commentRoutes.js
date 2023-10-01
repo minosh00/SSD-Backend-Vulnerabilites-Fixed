@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const CommentService = require("../Controllers/comment.controller");
+const CommentService = require("../controllers/commentController");
 
 router
   .route("/comments")

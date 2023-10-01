@@ -1,8 +1,8 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Order = require('../models/order');
+const Order = require("../models/order");
 
-router.post('/orders', async (req, res) => {
+router.post("/orders", async (req, res) => {
   const order = new Order({
     user: req.body.user,
     orderedItems: req.body.orderedItems,
@@ -11,22 +11,17 @@ router.post('/orders', async (req, res) => {
     const o1 = await order.save();
     res.json(o1);
   } catch (error) {
-    res.send('Error: ' + error);
+    res.send("Error: " + error);
   }
 });
 
-
-
-
-router.get('/allorder', async (req, res) => {
+router.get("/orders", async (req, res) => {
   try {
     const meals = await Order.find();
     res.json(meals);
   } catch (error) {
-    res.send('Error: ' + error);
+    res.send("Error: " + error);
   }
 });
-
-
 
 module.exports = router;
