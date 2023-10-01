@@ -8,6 +8,9 @@ const dotenv = require("dotenv");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Remove the X-Powered-By header
+app.disable("x-powered-by");
+
 // Middleware
 app.use(cors({ origin: "*" }));
 app.use(bodyParser.urlencoded({ extended: true }));
