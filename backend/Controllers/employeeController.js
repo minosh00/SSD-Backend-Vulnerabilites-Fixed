@@ -1,32 +1,42 @@
 const mongoose = require("mongoose");
 const Employee = require("../models/Employee");
+const logger = require('../Log/Logger.js');
+
 
 const employeesController = {
-  // Create a new employee
-  createEmployee: async (req, res) => {
-    const employeeData = req.body;
 
-    if (employeeData.fname.length < 5)
+ // Create a new employee
+ createEmployee: async (req, res) => {
+  const employeeData = req.body;
+
+  try {
+    if (employeeData.fname.length < 5) {
+      logger.warn('Employee creation failed due to invalid fname length');
       return res.status(400).json({
         errorMessage: "Please enter a fname of at least 5 characters.",
       });
+    }
 
     const newEmployee = new Employee({ ...employeeData, creator: req.userId });
 
-    try {
-      const savedEmployee = await newEmployee.save();
-      res.status(201).json(savedEmployee);
-    } catch (error) {
-      res.status(409).json({ message: error.message });
-    }
-  },
+    const savedEmployee = await newEmployee.save();
+
+    logger.info(`Employee created with id ${savedEmployee._id}`);
+    res.status(201).json(savedEmployee);
+  } catch (error) {
+    logger.error('Error while creating employee: ' + error.message);
+    res.status(409).json({ message: error.message });
+  }
+},
 
   // Get all employees
   getEmployees: async (req, res) => {
     try {
       const employees = await Employee.find();
+      logger.info('Retrieved all employees successfully');
       res.status(200).json(employees);
     } catch (error) {
+      logger.error('Error while getting employees: ' + error.message);
       res.status(500).json({ message: error.message });
     }
   },
@@ -39,10 +49,14 @@ const employeesController = {
       const employee = await Employee.findById(id);
 
       if (!employee)
-        return res.status(404).json({ message: "Employee not found" });
-
+      logger.warn(`Employee with id ${id} not found`);
+      return res.status(404).json({ message: "Employee not found" });
+      logger.info(`Retrieved employee with id ${id}`);
       res.status(200).json(employee);
+
     } catch (error) {
+
+      logger.error('Error while getting employee by ID: ' + error.message);
       res.status(500).json({ message: error.message });
     }
   },
@@ -72,10 +86,13 @@ const employeesController = {
       );
 
       if (!updatedEmployee)
-        return res.status(404).json({ message: "Employee not found" });
-
+      logger.warn(`Employee with id ${id} not found for update`);
+      return res.status(404).json({ message: "Employee not found" });
+      
+      logger.info(`Updated employee with id ${id}`);
       res.json(updatedEmployee);
     } catch (error) {
+      logger.error('Error while updating employee: ' + error.message);
       res.status(500).json({ message: error.message });
     }
   },
@@ -88,13 +105,16 @@ const employeesController = {
       const removedEmployee = await Employee.findByIdAndRemove(id);
 
       if (!removedEmployee)
+        logger.warn(`Employee with id ${id} not found for removal`);
         return res.status(404).json({ message: "Employee not found" });
-
+      
+      logger.info(`Removed employee with id ${id}`);
       res.status(200).json({
         success: true,
         employee: removedEmployee,
       });
     } catch (error) {
+      logger.error('Error while removing employee: ' + error.message);
       res.status(500).json({ message: error.message });
     }
   },

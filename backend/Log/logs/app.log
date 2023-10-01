@@ -1,0 +1,3 @@
+info: Employee created with id 65193993f35ea819384a959a {"timestamp":"2023-10-01T09:19:16.041Z"}
+info: Retrieved all food items {"timestamp":"2023-10-01T09:28:11.778Z"}
+warn: Login attempt failed for email: admin1232@gmail.com (User not found) {"timestamp":"2023-10-01T09:58:37.005Z"}
