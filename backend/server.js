@@ -19,7 +19,7 @@ app.use(morgan("dev")); // Use "dev" format for request logging
 
 
 //import Routes 
-app.use("/user",  require("./routes/userRoutes"));
+app.use("/api",  require("./routes/usersRoutes"));
 app.use("/api", require("./routes/roomRoutes"));
 app.use("/api", require("./routes/employeeRoutes"));
 app.use('/api', require('./routes/commentRoutes'));
