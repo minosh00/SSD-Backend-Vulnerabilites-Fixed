@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 var jwtSecret = "mysecrettoken";
 
 module.exports = function (req, res, next) {
-  // Get token from the Authorization header
   const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
 
   // Check if there is no token in the header
