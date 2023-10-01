@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Employee = require("../models/Employee");
 
 const employeesController = {
+  // Create a new employee
   createEmployee: async (req, res) => {
     const employeeData = req.body;
 
@@ -20,6 +21,7 @@ const employeesController = {
     }
   },
 
+  // Get all employees
   getEmployees: async (req, res) => {
     try {
       const employees = await Employee.find();
@@ -29,6 +31,23 @@ const employeesController = {
     }
   },
 
+  // Get an employee by ID
+  getEmployeeById: async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const employee = await Employee.findById(id);
+
+      if (!employee)
+        return res.status(404).json({ message: "Employee not found" });
+
+      res.status(200).json(employee);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+  
+  // Update an employee by ID
   updateEmployee: async (req, res) => {
     const { id } = req.params;
     const { fname, lname, JobPosition, gender, HomeAddress, email, Pnumber } =
@@ -61,6 +80,7 @@ const employeesController = {
     }
   },
 
+  // Remove an employee by ID
   removeEmployee: async (req, res) => {
     const { id } = req.params;
 
@@ -74,21 +94,6 @@ const employeesController = {
         success: true,
         employee: removedEmployee,
       });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  },
-
-  getEmployeeById: async (req, res) => {
-    const { id } = req.params;
-
-    try {
-      const employee = await Employee.findById(id);
-
-      if (!employee)
-        return res.status(404).json({ message: "Employee not found" });
-
-      res.status(200).json(employee);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

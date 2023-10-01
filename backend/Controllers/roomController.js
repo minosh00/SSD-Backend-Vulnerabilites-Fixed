@@ -20,6 +20,7 @@ const roomController = {
       res.status(409).json({ message: error.message });
     }
   },
+  
   // Get all the rooms
   getRooms: async (req, res) => {
     try {
