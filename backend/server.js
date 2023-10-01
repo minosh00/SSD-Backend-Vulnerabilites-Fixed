@@ -19,14 +19,14 @@ app.use(morgan("dev")); // Use "dev" format for request logging
 
 
 //import Routes 
-app.use("/user",  require("./routes/Userroutes"));
-app.use("/room", require("./routes/Room.Routes"));
-app.use("/employee", require("./routes/Employee.Routes"));
-app.use('/api', require('./routes/Comment.Routes'));
-app.use('/book', require('./routes/Booking.Routes'));
-app.use('/supplier', require('./routes/Supplier.route'));
-app.use("/menu", require("./Routes/food.routes"));
-app.use("/orders", require("./Routes/orders"));
+app.use("/user",  require("./routes/userRoutes"));
+app.use("/api", require("./routes/roomRoutes"));
+app.use("/api", require("./routes/employeeRoutes"));
+app.use('/api', require('./routes/commentRoutes'));
+app.use('/api', require('./routes/bookingRoutes'));
+app.use('/api', require('./routes/supplierRoutes'));
+app.use("/api", require("./Routes/foodRoutes"));
+app.use("/api", require("./Routes/orderRoutes"));
 
 
 mongoose.connect(

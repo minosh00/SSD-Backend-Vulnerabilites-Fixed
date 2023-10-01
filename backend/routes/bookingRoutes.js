@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Booking = require('../models/Booking');
-const ROOMS = require("../models/Rooms");
+const Room = require("../models/Room");
 
 router.post('/bookroom', async (req, res) => {
     const {
@@ -30,7 +30,7 @@ router.post('/bookroom', async (req, res) => {
             request,
         })
         const booking = await newBooking.save();
-        const roomtemp = await ROOMS.findOne({ _id: userid._id })
+        const roomtemp = await Room.findOne({ _id: userid._id })
         roomtemp.currentbookings.push({
             bookingid: booking._id,
             fromdate: fromdate,

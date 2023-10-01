@@ -10,8 +10,7 @@ const {
   updateUser,
   registerUser,
   loginUser,
-  getUsersByID
-} = require("../Controllers/userController");
+} = require("../controllers/userController");
 
 var jwtSecret = "mysecrettoken"; // Replace with your actual JWT secret
 
