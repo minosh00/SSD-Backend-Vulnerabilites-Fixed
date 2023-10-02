@@ -1,17 +1,34 @@
 const Food = require("../models/Food");
-const logger = require('../Log/Logger.js');
+const logger = require("../Log/Logger.js");
+const { isNumeric } = require("validator");
 
 const foodController = {
   // Create Food
   createFood: async (req, res) => {
-    const foodData = req.body;
-    const newFood = new Food({ ...foodData, creator: req.userId });
+    const { name, description, price, images } = req.body;
+
+    // Convert price to a string
+    const priceAsString = price.toString();
+
+    // Input validation
+    if (!isNumeric(priceAsString) || parseFloat(priceAsString) < 0) {
+      return res.status(400).json({ error: "Invalid price" });
+    }
+
+    const newFood = new Food({
+      name,
+      description,
+      price: parseFloat(priceAsString),
+      images,
+      creator: req.userId,
+    });
+
     try {
       await newFood.save();
-      logger.info('Created a new food item: ' + newFood._id); // Log the creation
+      logger.info("Created a new food item: " + newFood._id); // Log the creation
       res.status(201).json(newFood);
     } catch (error) {
-      logger.error('Error while creating a food item: ' + error.message);
+      logger.error("Error while creating a food item: " + error.message);
       res.status(409).json({ message: error.message });
     }
   },
@@ -20,12 +37,10 @@ const foodController = {
   getFoods: async (req, res) => {
     try {
       const meals = await Food.find();
-      logger.info('Retrieved all food items'); // Log the retrieval
+      logger.info("Retrieved all food items"); // Log the retrieval
       res.json(meals);
-
     } catch (error) {
-
-      logger.error('Error while retrieving food items: ' + error.message);
+      logger.error("Error while retrieving food items: " + error.message);
       res.status(500).json({ message: "Error: " + error });
     }
   },
@@ -43,13 +58,15 @@ const foodController = {
         res.status(404).json({ message: "Food item not found" });
       }
     } catch (error) {
-      logger.error(`Error while retrieving food item by ID ${id}: ${error.message}`);
+      logger.error(
+        `Error while retrieving food item by ID ${id}: ${error.message}`
+      );
       res.status(500).json({ message: error.message });
     }
   },
 
   // Update food
-updateFood: async (req, res) => {
+  updateFood: async (req, res) => {
     try {
       const { name, description, price, images } = req.body;
       await Food.findOneAndUpdate(
@@ -59,7 +76,9 @@ updateFood: async (req, res) => {
       logger.info(`Updated food item with ID: ${req.params.id}`);
       res.json({ msg: "Updated Food" });
     } catch (err) {
-      logger.error(`Error while updating food item with ID ${req.params.id}: ${err.message}`);
+      logger.error(
+        `Error while updating food item with ID ${req.params.id}: ${err.message}`
+      );
       return res.status(500).json({ msg: err.message });
     }
   },
@@ -79,7 +98,9 @@ updateFood: async (req, res) => {
         res.status(404).json({ message: "Food item not found" });
       }
     } catch (error) {
-      logger.error(`Error while deleting food item with ID ${req.params.id}: ${error.message}`);
+      logger.error(
+        `Error while deleting food item with ID ${req.params.id}: ${error.message}`
+      );
       res.status(500).json({ error: error.message });
     }
   },

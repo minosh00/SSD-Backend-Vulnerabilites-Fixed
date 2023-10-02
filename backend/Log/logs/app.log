@@ -120,3 +120,11 @@ info: Retrieved 9 users from the database {"timestamp":"2023-10-02T16:04:55.494Z
 warn: Login attempt failed for email: admin1232@gmail.com (User not found) {"timestamp":"2023-10-02T16:05:01.625Z"}
 info: Retrieved all food items {"timestamp":"2023-10-02T16:05:26.311Z"}
 info: Employee created with id 651aea51e0171241a4c99b3f {"timestamp":"2023-10-02T16:05:37.471Z"}
+info: Retrieved all employees successfully {"timestamp":"2023-10-02T18:58:55.215Z"}
+info: Employee created with id 651b13330f35a74c5cde00b6 {"timestamp":"2023-10-02T19:00:05.445Z"}
+info: Retrieved 9 users from the database {"timestamp":"2023-10-02T19:03:38.054Z"}
+info: Retrieved all food items {"timestamp":"2023-10-02T19:15:37.450Z"}
+info: Created a new food item: 651b180c325af563f4aec796 {"timestamp":"2023-10-02T19:20:45.135Z"}
+info: Created a new food item: 651b18dcd43e2c64445890c3 {"timestamp":"2023-10-02T19:24:20.570Z"}
+info: Employee created with id 651b194f3afb1816c4cc0439 {"timestamp":"2023-10-02T19:26:07.762Z"}
+info: Retrieved all employees successfully {"timestamp":"2023-10-02T19:26:11.455Z"}
