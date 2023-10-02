@@ -5,8 +5,9 @@ const User = require("../models/User");
 const { validationResult } = require("express-validator");
 const logger = require('../Log/Logger.js');
 
+// Use environment variable for JWT secret key
+const jwtSecret = process.env.JWT_SECRET || "mysecrettoken";
 
-var jwtSecret = "mysecrettoken";
 
 const userController = {
 
