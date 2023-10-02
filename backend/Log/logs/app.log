@@ -116,3 +116,7 @@ info: Retrieved 8 users from the database {"timestamp":"2023-10-01T11:26:08.046Z
 info: Retrieved 8 users from the database {"timestamp":"2023-10-01T11:26:08.056Z"}
 info: Retrieved 8 users from the database {"timestamp":"2023-10-01T11:26:08.091Z"}
 info: Retrieved 8 users from the database {"timestamp":"2023-10-01T11:26:10.485Z"}
+info: Retrieved 9 users from the database {"timestamp":"2023-10-02T16:04:55.494Z"}
+warn: Login attempt failed for email: admin1232@gmail.com (User not found) {"timestamp":"2023-10-02T16:05:01.625Z"}
+info: Retrieved all food items {"timestamp":"2023-10-02T16:05:26.311Z"}
+info: Employee created with id 651aea51e0171241a4c99b3f {"timestamp":"2023-10-02T16:05:37.471Z"}
