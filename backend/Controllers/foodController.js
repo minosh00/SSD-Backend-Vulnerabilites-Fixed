@@ -2,34 +2,47 @@ const Food = require("../models/Food");
 const logger = require("../Log/Logger.js");
 const { isNumeric } = require("validator");
 
+
 const foodController = {
   // Create Food
   createFood: async (req, res) => {
-    const { name, description, price, images } = req.body;
-
-    // Convert price to a string
-    const priceAsString = price.toString();
-
-    // Input validation
-    if (!isNumeric(priceAsString) || parseFloat(priceAsString) < 0) {
-      return res.status(400).json({ error: "Invalid price" });
-    }
-
-    const newFood = new Food({
-      name,
-      description,
-      price: priceAsString,
-      images,
-      creator: req.userId,
-    });
-
     try {
+      const { name, description, price, images } = req.body;
+
+      // Validate user input
+      if (
+        typeof name !== "string" ||
+        typeof description !== "string" ||
+        typeof price !== "number" ||
+        !Array.isArray(images)
+      ) {
+        return res.status(400).json({
+          errorMessage: "Invalid input data.",
+        });
+      }
+
+      // Convert price to a string
+      const priceAsString = price.toString();
+
+      // Input validation
+      if (!isNumeric(priceAsString) || parseFloat(priceAsString) < 0) {
+        return res.status(400).json({ error: "Invalid price" });
+      }
+
+      const newFood = new Food({
+        name,
+        description,
+        price: priceAsString,
+        images,
+        creator: req.userId, // Assuming you have a userId available in the request
+      });
+
       await newFood.save();
       logger.info("Created a new food item: " + newFood._id); // Log the creation
       res.status(201).json(newFood);
     } catch (error) {
       logger.error("Error while creating a food item: " + error.message);
-      res.status(409).json({ message: error.message });
+      res.status(500).json({ message: "Server error" });
     }
   },
 
