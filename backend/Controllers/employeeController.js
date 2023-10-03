@@ -67,7 +67,7 @@ const employeesController = {
       req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).send(`No employee with id: ${id}`);
+      return res.status(404).send(`No employee with this ID`);
     }
 
     try {
