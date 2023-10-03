@@ -71,7 +71,7 @@ const roomController = {
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       logger.error(`Invalid room ID: ${id}`);
-      return res.status(404).send(`No room with id: ${id}`);
+      return res.status(404).send(`No room with this id`);
     }
 
     const updatedRoom = {
