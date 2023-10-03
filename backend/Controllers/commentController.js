@@ -36,11 +36,20 @@ const commentsController = {
   getComments: async (req, res) => {
     try {
       const roomID = req.query.roomID;
+      const commentQuery = req.query.comment;
+      if (!roomID || typeof roomID !== 'string' || !commentQuery || typeof commentQuery !== 'string') {
+        logger.error('Invalid input parameters');
+        return res.status(400).json({ msg: 'Invalid input parameters' });
+      }
+      const sanitizedCommentQuery = sanitizeInput(commentQuery);
+      const safeRegExp = new RegExp(`.*${sanitizedCommentQuery}.*`);
+  
       const comments = await Comment.find({
         roomID: roomID,
-        comment: new RegExp(`.*${req.query.comment}.*`),
+        comment: safeRegExp,
       });
-      logger.info(`Fetched comments for roomID ${roomID} with comment containing "${req.query.comment}"`);
+  
+      logger.info(`Fetched comments for roomID ${roomID} with comment containing "${sanitizedCommentQuery}"`);
       res.json(comments);
     } catch (err) {
       logger.error('Error while fetching comments: ' + err.message);
