@@ -18,7 +18,7 @@ const foodController = {
     const newFood = new Food({
       name,
       description,
-      price: parseFloat(priceAsString),
+      price: priceAsString,
       images,
       creator: req.userId,
     });
