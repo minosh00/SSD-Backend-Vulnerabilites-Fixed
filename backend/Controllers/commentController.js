@@ -30,33 +30,35 @@ const commentsController = {
   },
 
   // Get all the comments
-  getComments: async (req, res) => {
-    try {
-      const roomID = req.query.roomID;
+ // Get all the comments
+getComments: async (req, res) => {
+  try {
+    const roomID = req.query.roomID;
 
-      // Sanitize and escape user input
-      const sanitizedInput = req.query.comment.replace(
-        /[-/\\^$*+?.()|[\]{}]/g,
-        "\\$&"
-      );
+    // Sanitize and escape user input
+    const sanitizedInput = req.query.comment.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
 
-      // Create a regular expression with the sanitized input
-      const regex = new RegExp(`.*${sanitizedInput}.*`);
-
-      const comments = await Comment.find({
-        roomID: roomID,
-        comment: regex,
-      });
-
-      logger.info(
-        `Fetched comments for roomID ${roomID} with comment containing "${req.query.comment}"`
-      );
-      res.json(comments);
-    } catch (err) {
-      logger.error("Error while fetching comments: " + err.message);
-      return res.status(500).json({ msg: err.message });
+    // Validate the sanitized input for length and complexity
+    if (sanitizedInput.length > 50 || !/^[a-zA-Z0-9\s]*$/.test(sanitizedInput)) {
+      throw new Error('Invalid input');
     }
-  },
+
+    // Create a regular expression with the sanitized input
+    const regex = new RegExp(`.*${sanitizedInput}.*`);
+
+    const comments = await Comment.find({
+      roomID: roomID,
+      comment: regex,
+    });
+
+    logger.info(`Fetched comments for roomID ${roomID} with comment containing "${req.query.comment}"`);
+    res.json(comments);
+  } catch (err) {
+    logger.error('Error while fetching comments: ' + err.message);
+    return res.status(500).json({ msg: 'Invalid input or error occurred' });
+  }
+},
+
 
   // Get comment by ID
   getCommentByID: async (req, res) => {
