@@ -3,52 +3,31 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { validationResult } = require("express-validator");
-const logger = require('../Log/Logger.js');
+const logger = require("../Log/Logger.js");
 
 // Use environment variable for JWT secret key
 const jwtSecret = process.env.JWT_SECRET;
 
-
 const userController = {
-
   // Register a new user
   registerUser: async (req, res) => {
     try {
-      // Validate user input
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+      // Validate user input using the validateUserInput function
+      if (!validateUserInput(req, res)) {
+        return; // Exit if validation fails
       }
-  
+
       const { Fullname, email, password, userRole, pNumber } = req.body;
-  
-      if (!Fullname || !email || !password) {
-        return res.status(400).json({
-          errorMessage: "Name, email, and password fields are required.",
-        });
-      }
-  
-      if (Fullname.length < 3) {
-        return res.status(400).json({
-          errorMessage: "Name field must be at least 3 characters long.",
-        });
-      }
-  
-      if (password.length < 7) {
-        return res.status(400).json({
-          errorMessage: "Password field must be at least 7 characters long.",
-        });
-      }
-  
+
       // Check if the user already exists
       let user = await User.findOne({ email });
-  
+
       if (user) {
         return res
           .status(400)
           .json({ errors: [{ msg: "User already exists" }] });
       }
-  
+
       user = new User({
         Fullname,
         pNumber,
@@ -56,26 +35,26 @@ const userController = {
         password,
         userRole,
       });
-  
+
       // Encrypt Password
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(password, salt);
-  
+
       await user.save();
-  
+
       // Return a JSON Web Token (JWT)
       const payload = {
         user: {
           id: user.id,
         },
       };
-  
-      jwt.sign(payload, jwtSecret, { expiresIn: '1h' }, (err, token) => {
+
+      jwt.sign(payload, jwtSecret, { expiresIn: "1h" }, (err, token) => {
         if (err) {
           logger.error(`Error signing JWT: ${err.message}`);
           throw err;
         }
-  
+
         logger.info(`User registered: ${user.Fullname}`);
         res.json({ token, userRole: user.userRole, user: user.Fullname });
       });
@@ -135,7 +114,9 @@ const userController = {
       let user = await User.findOne({ email });
 
       if (!user) {
-        logger.warn(`Login attempt failed for email: ${email} (User not found)`);
+        logger.warn(
+          `Login attempt failed for email: ${email} (User not found)`
+        );
         return res
           .status(400)
           .json({ errors: [{ msg: "Invalid Credentials" }] });
@@ -144,7 +125,9 @@ const userController = {
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
-        logger.warn(`Login attempt failed for email: ${email} (Invalid password)`);
+        logger.warn(
+          `Login attempt failed for email: ${email} (Invalid password)`
+        );
         return res
           .status(400)
           .json({ errors: [{ msg: "Invalid Credentials" }] });
@@ -159,15 +142,18 @@ const userController = {
 
       jwt.sign(payload, jwtSecret, { expiresIn: "1 day" }, (err, token) => {
         if (err) {
-          logger.error(`Error signing JWT for email: ${email} - ${err.message}`);
+          logger.error(
+            `Error signing JWT for email: ${email} - ${err.message}`
+          );
           throw err;
         }
         logger.info(`User logged in: ${user.Fullname}`);
         res.json({ token, user: user.Fullname, userRole: user.userRole });
       });
-
-     } catch (err) {
-      logger.error(`Error during user login for email: ${email} - ${err.message}`);
+    } catch (err) {
+      logger.error(
+        `Error during user login for email: ${email} - ${err.message}`
+      );
       console.error(err.message);
       res.status(500).send("Server error");
     }
@@ -190,7 +176,6 @@ const userController = {
       res.status(500).send("Server Error");
     }
   },
-
 
   // Get all users
   getUsers: async (req, res) => {
