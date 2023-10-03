@@ -1,4 +1,5 @@
 const Comment = require("../models/Comment");
+const logger = require('../Log/Logger.js');
 
 const commentsController = {
   // Create Comment
@@ -7,7 +8,8 @@ const commentsController = {
       const { noOfStars, comment, userEmail, userPNumber, userImage, roomID } =
         req.body;
 
-      console.log(req.body);
+        logger.info('Received request to create a new comment', req.body);
+
 
       const newComment = new Comment({
         noOfStars,
@@ -19,8 +21,13 @@ const commentsController = {
       });
 
       await newComment.save();
+
+      logger.info('Comment added successfully');
       res.json({ msg: "Comment added!" });
+
     } catch (err) {
+
+      logger.error('Error while creating comment: ' + err.message);
       return res.status(500).json({ msg: err.message });
     }
   },
@@ -33,8 +40,10 @@ const commentsController = {
         roomID: roomID,
         comment: new RegExp(`.*${req.query.comment}.*`),
       });
+      logger.info(`Fetched comments for roomID ${roomID} with comment containing "${req.query.comment}"`);
       res.json(comments);
     } catch (err) {
+      logger.error('Error while fetching comments: ' + err.message);
       return res.status(500).json({ msg: err.message });
     }
   },
@@ -44,8 +53,16 @@ const commentsController = {
     try {
       let id = req.params.id;
       const comment = await Comment.findById(id);
+
+      if (!comment) {
+        logger.warn(`Comment with id ${id} not found`);
+        return res.status(404).json({ message: `Comment with id ${id} not found` });
+      }
+
+      logger.info(`Fetched comment with id ${id} successfully`);
       res.json(comment);
     } catch (err) {
+      logger.error(`Error while fetching comment with id ${id}: ` + err.message);
       return res.status(500).json({ msg: err.message });
     }
   },
@@ -66,10 +83,12 @@ const commentsController = {
         { _id: req.params.id },
         { noOfStars, comment, userEmail, userPNumber, userImage, likes, roomID }
       );
-
+      logger.info(`Comment with id ${commentId} updated successfully`);
       res.json({ msg: "Comment updated!" });
     } catch (err) {
+      logger.error('Error while updating comment: ' + err.message);
       return res.status(500).json({ msg: err.message });
+
     }
   },
 
@@ -93,8 +112,10 @@ const commentsController = {
         { likes: Number(comment.likes) + 1 }
       );
 
+      logger.info(`Like added to comment with id ${commentId}`);
       res.json({ msg: "Like Added!" });
     } catch (err) {
+      logger.error('Error while adding like to comment: ' + err.message);
       return res.status(500).json({ msg: err.message });
     }
   },
@@ -108,8 +129,11 @@ const commentsController = {
         { likes: Number(comment.likes) - 1 }
       );
 
+      logger.info(`Like removed from comment with id ${commentId}`);
       res.json({ msg: "Like Removed!" });
+      
     } catch (err) {
+      logger.error('Error while removing like from comment: ' + err.message);
       return res.status(500).json({ msg: err.message });
     }
   },

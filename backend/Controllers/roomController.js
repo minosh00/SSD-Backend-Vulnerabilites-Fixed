@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Room = require("../models/Room");
+const logger = require('../Log/Logger.js');
 
 const roomController = {
   // Create room
@@ -15,8 +16,10 @@ const roomController = {
 
     try {
       await newRoom.save();
+      logger.info(`Created a new room with ID: ${newRoom._id}`);
       res.status(201).json(newRoom);
     } catch (error) {
+      logger.error(`Error creating room: ${error.message}`);
       res.status(409).json({ message: error.message });
     }
   },
@@ -25,8 +28,10 @@ const roomController = {
   getRooms: async (req, res) => {
     try {
       const rooms = await Room.find();
+      logger.info(`Fetched ${rooms.length} rooms`);
       res.status(200).json(rooms);
     } catch (error) {
+      logger.error(`Error fetching rooms: ${error.message}`);
       res.status(404).json({ message: error.message });
     }
   },
@@ -39,9 +44,11 @@ const roomController = {
       const room = await Room.findById(id);
 
       if (!room) return res.status(404).json({ message: "Room not found" });
+      logger.info(`Fetched room with ID: ${id}`);
 
       res.status(200).json(room);
     } catch (error) {
+      logger.error(`Error fetching room: ${error.message}`);
       res.status(404).json({ message: error.message });
     }
   },
@@ -62,8 +69,10 @@ const roomController = {
       type,
     } = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(id))
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      logger.error(`Invalid room ID: ${id}`);
       return res.status(404).send(`No room with id: ${id}`);
+    }
 
     const updatedRoom = {
       name,
@@ -84,11 +93,14 @@ const roomController = {
         new: true,
       });
 
-      if (!updatedRoomDoc)
+      if (!updatedRoomDoc) {
+        logger.error(`Room with ID ${id} not found`);
         return res.status(404).json({ message: "Room not found" });
-
+      }
+      logger.info(`Updated room with ID: ${id}`);
       res.json(updatedRoomDoc);
     } catch (error) {
+      logger.error(`Error updating room: ${error.message}`);
       res.status(500).json({ message: error.message });
     }
   },
@@ -98,14 +110,18 @@ const roomController = {
     try {
       const removedRoom = await Room.findByIdAndRemove(req.params.id);
 
-      if (!removedRoom)
+      if (!removedRoom) {
+        logger.error(`Room with ID ${req.params.id} not found`);
         return res.status(404).json({ message: "Room not found" });
+      }
 
+      logger.info(`Deleted room with ID: ${req.params.id}`);
       res.status(200).json({
         success: true,
         room: removedRoom,
       });
     } catch (error) {
+      logger.error(`Error deleting room: ${error.message}`);
       res.status(500).json({ message: error.message });
     }
   },
@@ -115,8 +131,10 @@ const roomController = {
     try {
       let adult = req.params.adult;
       const rooms = await Room.find({ adult: adult });
+      logger.info(`Fetched rooms with adult count: ${adult}`);
       res.status(200).json(rooms);
     } catch (err) {
+      logger.error(`Error fetching rooms by adult count: ${err.message}`);
       res.json(err);
     }
   },
@@ -126,8 +144,10 @@ const roomController = {
     try {
       let children = req.params.children;
       const rooms = await Room.find({ children: children });
+      logger.info(`Fetched rooms with children count: ${children}`);
       res.status(200).json(rooms);
     } catch (err) {
+      logger.error(`Error fetching rooms by children count: ${err.message}`);
       res.json(err);
     }
   },
@@ -137,8 +157,10 @@ const roomController = {
     try {
       let bedroom = req.params.bedroom;
       const rooms = await Room.find({ bedroom: bedroom });
+      logger.info(`Fetched rooms with bedroom count: ${bedroom}`);
       res.status(200).json(rooms);
     } catch (err) {
+      logger.error(`Error fetching rooms by bedroom count: ${err.message}`);
       res.json(err);
     }
   },

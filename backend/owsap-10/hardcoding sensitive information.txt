@@ -1,0 +1,11 @@
+The vulnerability related to hardcoding sensitive information like secret keys directly in the source code is often referred to as "Hardcoded Secrets" or "Hardcoded Credentials" vulnerability. This vulnerability occurs when sensitive data, such as passwords, API keys, or secret tokens, are embedded directly in the code and are not properly protected. It's considered a security best practice to avoid hardcoded secrets and instead store them securely, such as using environment variables or a secure key management system. Hardcoded secrets can be easily exposed if the code is shared or if there is unauthorized access to the codebase, making it a significant security risk.
+
+// Use environment variable for JWT secret key
+const jwtSecret = process.env.JWT_SECRET || "mysecrettoken";
+
+
+JWT Secret Key: The JWT secret key is now fetched from an environment variable (process.env.JWT_SECRET). It falls back to a default value ("mysecrettoken") if the environment variable is not set. This is a more secure way to manage secrets.
+
+
+JWT_SECRET: Replace your-secret-key with your desired secret key for JWT token generation.
+

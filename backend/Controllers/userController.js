@@ -3,12 +3,16 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { validationResult } = require("express-validator");
+const logger = require('../Log/Logger.js');
 
-var jwtSecret = "mysecrettoken";
+// Use environment variable for JWT secret key
+const jwtSecret = process.env.JWT_SECRET || "mysecrettoken";
+
 
 const userController = {
+
   // Register a new user
-  registerUser: async (req, res) => {
+   registerUser: async (req, res) => {
     // Validate user input
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -68,10 +72,16 @@ const userController = {
       };
 
       jwt.sign(payload, jwtSecret, { expiresIn: 360000 }, (err, token) => {
-        if (err) throw err;
+        if (err) {
+          logger.error(`Error signing JWT: ${err.message}`);
+          throw err;
+        }
+
+        logger.info(`User registered: ${user.Fullname}`);
         res.json({ token, userRole: user.userRole, user: user.Fullname });
       });
     } catch (err) {
+      logger.error(`Error during user registration: ${err.message}`);
       console.error(err.message);
       res.status(500).send("Server error");
     }
@@ -126,6 +136,7 @@ const userController = {
       let user = await User.findOne({ email });
 
       if (!user) {
+        logger.warn(`Login attempt failed for email: ${email} (User not found)`);
         return res
           .status(400)
           .json({ errors: [{ msg: "Invalid Credentials" }] });
@@ -134,6 +145,7 @@ const userController = {
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
+        logger.warn(`Login attempt failed for email: ${email} (Invalid password)`);
         return res
           .status(400)
           .json({ errors: [{ msg: "Invalid Credentials" }] });
@@ -147,10 +159,16 @@ const userController = {
       };
 
       jwt.sign(payload, jwtSecret, { expiresIn: "1 day" }, (err, token) => {
-        if (err) throw err;
+        if (err) {
+          logger.error(`Error signing JWT for email: ${email} - ${err.message}`);
+          throw err;
+        }
+        logger.info(`User logged in: ${user.Fullname}`);
         res.json({ token, user: user.Fullname, userRole: user.userRole });
       });
-    } catch (err) {
+
+     } catch (err) {
+      logger.error(`Error during user login for email: ${email} - ${err.message}`);
       console.error(err.message);
       res.status(500).send("Server error");
     }
@@ -160,19 +178,29 @@ const userController = {
   authUser: async (req, res) => {
     try {
       const user = await User.findById(req.user.id);
+      if (!user) {
+        logger.warn(`User with ID ${req.user.id} not found`);
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      logger.info(`User authenticated: ${user.Fullname}`);
       res.json(user);
     } catch (err) {
+      logger.error(`Error during user authentication: ${err.message}`);
       console.error(err.message);
       res.status(500).send("Server Error");
     }
   },
 
+
   // Get all users
   getUsers: async (req, res) => {
     try {
       const users = await User.find();
+      logger.info(`Retrieved ${users.length} users from the database`);
       res.status(200).json(users);
     } catch (error) {
+      logger.error(`Error while fetching users: ${error.message}`);
       res.status(404).json({ message: error.message });
     }
   },
@@ -185,11 +213,13 @@ const userController = {
       const user = await User.findById(id);
 
       if (!user) {
+        logger.error(`User not found for ID: ${id}`);
         return res.status(404).json({ message: "User not found" });
       }
-
+      logger.info(`User retrieved successfully for ID: ${id}`);
       res.status(200).json(user);
     } catch (error) {
+      logger.error(`Error while fetching user by ID: ${error.message}`);
       res.status(404).json({ message: error.message });
     }
   },
@@ -222,11 +252,10 @@ const userController = {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
+      logger.error(`Invalid user ID provided: ${id}`);
       return res.status(404).json({ message: `No user with id: ${id}` });
     }
-
     await User.findByIdAndRemove(id);
-
     res.json({ message: "User deleted successfully." });
   },
 
@@ -239,12 +268,14 @@ const userController = {
       const user = await User.findOne({ Fullname: id.id });
 
       if (!user) {
+        console.log(`User not found for Fullname: ${id.id}`);
         return res.status(404).json({ message: "User not found" });
       }
 
+      console.log(`User found for Fullname: ${id.id}`);
       res.status(200).json(user);
     } catch (error) {
-      console.log(error);
+      console.error(`Error while fetching user by Fullname: ${error.message}`);
       res.status(500).json({ message: error.message });
     }
   },

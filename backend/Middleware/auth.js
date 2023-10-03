@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 
-var jwtSecret = "mysecrettoken";
+// Use environment variable for JWT secret key
+const jwtSecret = process.env.JWT_SECRET || "mysecrettoken";
+
 
 module.exports = function (req, res, next) {
   const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
