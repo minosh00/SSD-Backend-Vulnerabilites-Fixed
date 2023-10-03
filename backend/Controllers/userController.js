@@ -12,43 +12,43 @@ const jwtSecret = process.env.JWT_SECRET;
 const userController = {
 
   // Register a new user
-   registerUser: async (req, res) => {
-    // Validate user input
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { Fullname, email, password, userRole, pNumber } = req.body;
-
-    if (!Fullname || !email || !password) {
-      return res.status(400).json({
-        errorMessage: "Name, email, and password fields are required..!",
-      });
-    }
-
-    if (Fullname.length < 3) {
-      return res.status(400).json({
-        errorMessage: "Name field is required..! (Min 3 characters)",
-      });
-    }
-
-    if (password.length < 7) {
-      return res.status(400).json({
-        errorMessage: "Password field is required..! (Min 7 characters)",
-      });
-    }
-
+  registerUser: async (req, res) => {
     try {
-      // See if user exists
+      // Validate user input
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+  
+      const { Fullname, email, password, userRole, pNumber } = req.body;
+  
+      if (!Fullname || !email || !password) {
+        return res.status(400).json({
+          errorMessage: "Name, email, and password fields are required.",
+        });
+      }
+  
+      if (Fullname.length < 3) {
+        return res.status(400).json({
+          errorMessage: "Name field must be at least 3 characters long.",
+        });
+      }
+  
+      if (password.length < 7) {
+        return res.status(400).json({
+          errorMessage: "Password field must be at least 7 characters long.",
+        });
+      }
+  
+      // Check if the user already exists
       let user = await User.findOne({ email });
-
+  
       if (user) {
         return res
           .status(400)
           .json({ errors: [{ msg: "User already exists" }] });
       }
-
+  
       user = new User({
         Fullname,
         pNumber,
@@ -56,27 +56,26 @@ const userController = {
         password,
         userRole,
       });
-
+  
       // Encrypt Password
       const salt = await bcrypt.genSalt(10);
-
       user.password = await bcrypt.hash(password, salt);
-
+  
       await user.save();
-
-      // Return jsonwebtoken
+  
+      // Return a JSON Web Token (JWT)
       const payload = {
         user: {
           id: user.id,
         },
       };
-
-      jwt.sign(payload, jwtSecret, { expiresIn: 360000 }, (err, token) => {
+  
+      jwt.sign(payload, jwtSecret, { expiresIn: '1h' }, (err, token) => {
         if (err) {
           logger.error(`Error signing JWT: ${err.message}`);
           throw err;
         }
-
+  
         logger.info(`User registered: ${user.Fullname}`);
         res.json({ token, userRole: user.userRole, user: user.Fullname });
       });
