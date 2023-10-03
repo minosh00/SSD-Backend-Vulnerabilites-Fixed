@@ -6,7 +6,7 @@ const { validationResult } = require("express-validator");
 const logger = require('../Log/Logger.js');
 
 // Use environment variable for JWT secret key
-const jwtSecret = process.env.JWT_SECRET || "mysecrettoken";
+const jwtSecret = process.env.JWT_SECRET;
 
 
 const userController = {
