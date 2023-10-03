@@ -2,17 +2,14 @@ const mongoose = require("mongoose");
 const Employee = require("../models/Employee");
 const logger = require("../Log/Logger.js");
 
-const validateEmployeeInput = (employeeData, res) => {
-  if (employeeData.fname.length < 5) {
-    logger.warn("Employee creation failed due to invalid First Name length");
-    res.status(400).json({
-      errorMessage: "Please enter a First Name of at least 5 characters.",
-    });
+// Function to validate employee data
+function isValidEmployeeData(data) {
+  if (typeof data.fname !== "string" || data.fname.length < 5) {
     return false;
   }
-
-  return true; 
-};
+  // Add similar validation for other fields like lname, email, etc.
+  return true;
+}
 
 const employeesController = {
   // Create a new employee
@@ -20,15 +17,21 @@ const employeesController = {
     const employeeData = req.body;
 
     try {
-      if (!validateEmployeeInput(employeeData, res)) {
-        return;
+      // Check for validation errors
+      if (!isValidEmployeeData(employeeData)) {
+        logger.warn("Employee creation failed due to invalid data");
+        return res.status(400).json({
+          errorMessage: "Please provide valid employee data.",
+        });
       }
 
+      // Create a new employee
       const newEmployee = new Employee({
         ...employeeData,
         creator: req.userId,
       });
 
+      // Save the employee to the database
       const savedEmployee = await newEmployee.save();
 
       logger.info(`Employee created with id ${savedEmployee._id}`);

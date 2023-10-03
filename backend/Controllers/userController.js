@@ -8,45 +8,12 @@ const logger = require("../Log/Logger.js");
 // Use environment variable for JWT secret key
 const jwtSecret = process.env.JWT_SECRET;
 
-const validateUserInput = (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    res.status(400).json({ errors: errors.array() });
-    return false; 
-  }
-
-  const { Fullname, email, password } = req.body;
-
-  if (!Fullname || !email || !password) {
-    res.status(400).json({
-      errorMessage: "Name, email, and password fields are required.",
-    });
-    return false; 
-  }
-
-  if (Fullname.length < 3) {
-    res.status(400).json({
-      errorMessage: "Name field must be at least 3 characters long.",
-    });
-    return false; 
-  }
-
-  if (password.length < 7) {
-    res.status(400).json({
-      errorMessage: "Password field must be at least 7 characters long.",
-    });
-    return false; 
-  }
-
-  return true; 
-};
-
 const userController = {
   // Register a new user
   registerUser: async (req, res) => {
     try {
       if (!validateUserInput(req, res)) {
-        return;
+        return; 
       }
 
       const { Fullname, email, password, userRole, pNumber } = req.body;
