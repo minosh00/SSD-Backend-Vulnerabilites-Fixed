@@ -1,29 +1,35 @@
 const mongoose = require("mongoose");
 const Room = require("../models/Room");
-const logger = require('../Log/Logger.js');
+const logger = require("../Log/Logger.js");
+
+function validateRoomName(name) {
+  if (typeof name !== "string" || name.trim().length < 1) {
+    throw new Error("Please enter a room name of at least 1 character.");
+  }
+}
 
 const roomController = {
   // Create room
   createRoom: async (req, res) => {
     const roomData = req.body;
 
-    if (roomData.name.length < 1)
-      return res.status(400).json({
-        errorMessage: "Please enter a room name of at least 1 character.",
-      });
-
-    const newRoom = new Room({ ...roomData, creator: req.userId });
-
     try {
+      // Validate room name
+      validateRoomName(roomData.name);
+
+      // Create a new room
+      const newRoom = new Room({ ...roomData, creator: req.userId });
+
+      // Save the room to the database
       await newRoom.save();
       logger.info(`Created a new room with ID: ${newRoom._id}`);
       res.status(201).json(newRoom);
     } catch (error) {
       logger.error(`Error creating room: ${error.message}`);
-      res.status(409).json({ message: error.message });
+      res.status(400).json({ message: error.message });
     }
   },
-  
+
   // Get all the rooms
   getRooms: async (req, res) => {
     try {
