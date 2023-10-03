@@ -68,7 +68,7 @@ const suppliesController = {
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       logger.error(`Invalid supplier ID: ${id}`);
-      return res.status(404).send(`No supplier with id: ${updatedSupplier.id}`);
+      return res.status(404).send(`No supplier with this id`);
     }
 
     const updatedSupplier = {
