@@ -6,6 +6,7 @@ const morgan = require("morgan"); // Added morgan for request logging
 const dotenv = require("dotenv");
 const helmet = require("helmet"); // Added for security headers
 const rateLimit = require("express-rate-limit"); // Added for rate limiting
+const csrf = require('csurf'); // Added for CSRF protection
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -33,6 +34,10 @@ const apiLimiter = rateLimit({
 
 // Apply rate limiting to all routes
 app.use(apiLimiter);
+
+// Enable CSRF protection
+app.use(csrf());
+
 // Error logging middleware
 app.use((err, req, res, next) => {
   console.error(`[${new Date().toISOString()}] Error: ${err.message}`);
@@ -40,7 +45,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Internal Server Error" });
 });
 
-//import Routes
+// Make the CSRF token available to your views
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
+// Import Routes
 app.use("/api", require("./routes/usersRoutes"));
 app.use("/api", require("./routes/roomRoutes"));
 app.use("/api", require("./routes/employeeRoutes"));
@@ -52,7 +63,6 @@ app.use("/api", require("./Routes/orderRoutes"));
 
 mongoose
   .connect(process.env.DB_URL, {
-    //type warnings
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
